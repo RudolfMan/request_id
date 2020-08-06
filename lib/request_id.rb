@@ -72,12 +72,12 @@ module RequestId
     # Public: Retrieve the given id, which is generally set by the
     # Rack or Sidekiq middleware.
     def get(id_key)
-      Thread.current[id_key]
+      storage[id_key]
     end
 
     # Public: Set the given id to the given value
     def set(id_key, id_value)
-      Thread.current[id_key] = id_value
+      storage[id_key] = id_value
     end
 
     def configuration
@@ -95,5 +95,8 @@ module RequestId
       yield configuration
     end
 
+    def storage
+      configuration.storage.respond_to?(:call) ? configuration.storage.call : configuration.storage
+    end
   end
 end
